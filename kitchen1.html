@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kitchen Inventory App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    input, button {
+      padding: 8px;
+      font-size: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    .actions {
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kitchen Inventory</h1>
+
+  <form id="productForm">
+    <input type="text" id="name" placeholder="Product Name" required>
+    <input type="number" id="quantity" placeholder="Quantity" required>
+    <input type="text" id="packing" placeholder="Packing (e.g., 1kg, 500ml)" required>
+    <input type="text" id="location" placeholder="Location (e.g., Shelf A)" required>
+    <button type="submit">Add</button>
+  </form>
+
+  <table id="productTable">
+    <thead>
+      <tr>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Packing</th>
+        <th>Location</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <div class="actions">
+    <button onclick="downloadCSV()">Download CSV</button>
+  </div>
+
+  <script>
+    const form = document.getElementById('productForm');
+    const tableBody = document.querySelector('#productTable tbody');
+    const products = [];
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const quantity = document.getElementById('quantity').value;
+      const packing = document.getElementById('packing').value;
+      const location = document.getElementById('location').value;
+
+      const product = { name, quantity, packing, location };
+      products.push(product);
+
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${name}</td>
+        <td>${quantity}</td>
+        <td>${packing}</td>
+        <td>${location}</td>
+      `;
+      tableBody.appendChild(row);
+
+      form.reset();
+    });
+
+    function downloadCSV() {
+      if (products.length === 0) {
+        alert("No data to download!");
+        return;
+      }
+
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Product Name,Quantity,Packing,Location\n";
+      products.forEach(p => {
+        csvContent += `${p.name},${p.quantity},${p.packing},${p.location}\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "kitchen_inventory.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
